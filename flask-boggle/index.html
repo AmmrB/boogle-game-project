@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boggle Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Boggle Game</h1>
+    <p>Score: <span id="score">{{ score }}</span></p>
+    <p>Played: <span id="played">{{ played }}</span></p>
+    <p>Highest Score: <span id="highest_score">{{ highest_score }}</span></p>
+    <table>
+        {% for row in board %}
+        <tr>
+            {% for letter in row %}
+            <td>{{ letter }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <form id="word-form">
+        <input type="text" id="word-input">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <button id="reset">Reset Game</button>
+    <script>
+        document.getElementById('word-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let word = document.getElementById('word-input').value;
+            axios.post('/check-word', { word: word })
+                .then(function(response) {
+                    document.getElementById('result').innerText = response.data.result;
+                    document.getElementById('score').innerText = response.data.score;
+                });
+        });
+
+        document.getElementById('reset').addEventListener('click', function(event) {
+            axios.post('/reset')
+                .then(function(response) {
+                    document.getElementById('result').innerText = '';
+                    document.getElementById('score').innerText = response.data.score;
+                    document.getElementById('played').innerText = response.data.played;
+                    document.getElementById('highest_score').innerText = response.data.highest_score;
+                });
+        });
+    </script>
+</body>
+</html>
